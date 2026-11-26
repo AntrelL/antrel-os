@@ -69,7 +69,7 @@ docs/design/              визуальные референсы
 |---|---|
 | ESP Windows, FAT32, 196 МБ, UUID `0041-D5AC` | общий; NixOS кладёт туда только GRUB |
 | `C:` NTFS | Windows |
-| btrfs, метка `nixos` | NixOS: подтома `@` (/), `@home`, `@nix` |
+| btrfs, метка `nixos`, 40 ГБ | NixOS: подтома `@` (/), `@home`, `@nix` |
 | Recovery | Windows |
 
 Загрузчик: GRUB. Ядра лежат в `/boot` на btrfs: ESP слишком мал для поколений NixOS.
