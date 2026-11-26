@@ -22,6 +22,7 @@
 AGENTS.md                 контекст для агента: решения, правила, чек-лист после установки
 flake.nix                 входы, конфигурация uiux-2680, команда установки (nix run)
 install.sh                установка с live-флешки (с проверками разметки)
+hosts/installer/          live-флешка: официальная GNOME-флешка с текстовым меню загрузки
 hosts/uiux-2680/          имя машины, загрузка Windows, железо и разделы
 modules/                  системные модули по темам (core, boot, nvidia, audio,
                           performance, desktop, fonts, happ)
@@ -79,7 +80,19 @@ docs/design/              визуальные референсы
 ## Установка с нуля
 
 Нужно: 40 ГБ нераспределённого места сразу после `C:` (сжатие тома в Windows), гибернация и быстрый
-запуск Windows выключены (`powercfg /h off`), live-флешка NixOS Graphical ISO, интернет по кабелю.
+запуск Windows выключены (`powercfg /h off`), live-флешка из этого репозитория, интернет по кабелю.
+
+**Флешка.** Официальная флешка NixOS на этой плате не загружается: её графическое меню загрузки
+зависает, гасит экран или выкидывает в BIOS ([nixpkgs#427235](https://github.com/NixOS/nixpkgs/issues/427235)).
+Своя флешка — та же GNOME-флешка, но с текстовым меню. Сборка на Windows через Docker Desktop
+(PowerShell, в любой папке, например `Downloads`; долго, скачивается ~3 ГБ):
+
+```powershell
+docker run --rm -v "${PWD}:/out" nixos/nix sh -c 'nix --extra-experimental-features "nix-command flakes" build github:AntrelL/antrel-os#iso && cp -L result/iso/*.iso /out/'
+```
+
+Получится `nixos-*.iso` в этой папке. Записать на флешку через Rufus, режим **DD**. Загружаться
+с пункта «UEFI: <флешка>».
 
 В live-системе (GNOME) программы открываются клавишей Win и поиском по имени: **Console** — терминал,
 **GParted** — разделы, **Firefox** — этот README.

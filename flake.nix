@@ -24,6 +24,12 @@
         modules = [ ./hosts/uiux-2680 ];
       };
 
+      # Live ISO with a text boot menu: the stock ISO's graphical GRUB hangs on this board.
+      nixosConfigurations.installer = nixpkgs.lib.nixosSystem {
+        modules = [ ./hosts/installer ];
+      };
+      packages.x86_64-linux.iso = inputs.self.nixosConfigurations.installer.config.system.build.isoImage;
+
       # Installer for the live ISO: `nix run github:AntrelL/antrel-os` (see README).
       apps.x86_64-linux.default = {
         type = "app";
