@@ -11,6 +11,10 @@
       device = "nodev";
       efiSupport = true;
       configurationLimit = 20;
+      # Text menu: graphical GRUB (gfxterm) hangs on this X99 board in UEFI mode (nixpkgs#427235).
+      # A font alone switches GRUB to gfxterm, so both must be null.
+      font = null;
+      splashImage = null;
     };
   };
 }
