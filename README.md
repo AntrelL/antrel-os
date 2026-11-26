@@ -20,6 +20,7 @@
 
 ```
 flake.nix                 входы и единственная конфигурация uiux-2680
+install.sh                установка с live-флешки (с проверками разметки)
 hosts/uiux-2680/          имя машины, загрузка Windows, железо и разделы
 modules/                  системные модули по темам (core, boot, nvidia, audio,
                           performance, desktop, fonts, happ)
@@ -76,32 +77,26 @@ docs/design/              визуальные референсы
 
 ## Установка с нуля
 
-С live-флешки NixOS, от root. Нераспределённое место после `C:` должно уже быть (сжатие тома в Windows).
-Быстрый запуск Windows и гибернация выключены (`powercfg /h off`).
+Нужно: 40 ГБ нераспределённого места сразу после `C:` (сжатие тома в Windows), гибернация и быстрый
+запуск Windows выключены (`powercfg /h off`), live-флешка NixOS Graphical ISO, интернет по кабелю.
 
-```sh
-lsblk -f                                   # найти NVMe и свободный промежуток
-sgdisk -n 0:0:0 -t 0:8300 -c 0:nixos /dev/nvme0n1   # раздел в самом большом свободном промежутке
-lsblk -f                                   # запомнить номер нового раздела: /dev/nvme0n1pN
-mkfs.btrfs -L nixos /dev/nvme0n1pN
-
-mount /dev/disk/by-label/nixos /mnt
-btrfs subvolume create /mnt/@ /mnt/@home /mnt/@nix
-umount /mnt
-opts=compress=zstd,noatime
-mount -o subvol=@,$opts /dev/disk/by-label/nixos /mnt
-mkdir -p /mnt/home /mnt/nix /mnt/boot/efi
-mount -o subvol=@home,$opts /dev/disk/by-label/nixos /mnt/home
-mount -o subvol=@nix,$opts /dev/disk/by-label/nixos /mnt/nix
-mount /dev/disk/by-uuid/0041-D5AC /mnt/boot/efi
-
-nixos-generate-config --root /mnt --show-hardware-config   # сверить с hosts/uiux-2680/hardware.nix
-
-nix-shell -p gh git --run 'gh auth login && gh repo clone AntrelL/antrel-os /mnt/home/antrel/antrel-os'
-nixos-install --flake /mnt/home/antrel/antrel-os#uiux-2680
-nixos-enter --root /mnt -c 'passwd antrel && chown -R antrel:users /home/antrel'
-reboot
-```
+1. **Раздел — мышкой, в GParted** (есть в меню приложений live-системы).
+   Выбрать NVMe-диск → правой кнопкой по серому блоку «не распределено» (~40 ГБ) между `C:` и Recovery →
+   «Создать» → файловая система **btrfs**, метка **nixos** → «Добавить» → зелёная галка «Применить».
+   Другие разделы не трогать.
+2. **Репозиторий** (терминал; вход в GitHub через браузер с одноразовым кодом):
+   ```sh
+   nix-shell -p gh git --run 'gh auth login --web --git-protocol https && gh repo clone AntrelL/antrel-os ~/antrel-os'
+   ```
+3. **Установка:**
+   ```sh
+   cd ~/antrel-os && sudo ./install.sh
+   ```
+   Скрипт ничего не размечает и не форматирует. Он проверяет EFI-раздел Windows, единственный пустой
+   btrfs-раздел `nixos` на 35–45 ГиБ на том же диске, показывает план и ждёт `yes`. Дальше: подтома,
+   монтирование, копия репозитория в `/home/antrel/antrel-os`, `nixos-install`, пароль пользователя.
+   Повторный запуск после сбоя безопасен.
+4. `sudo reboot`, вынуть флешку.
 
 ## Ежедневная работа
 
