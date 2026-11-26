@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only
 # Happ client + its root daemon (happd) for TUN mode.
 # Based on https://github.com/MrShitFox/happ-nixos (GPL-3.0).
 {

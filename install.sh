@@ -4,9 +4,10 @@
 # Before running: in GParted create ONE btrfs partition labelled "nixos" in the
 # free space after C:. This script never partitions or formats anything: it
 # only checks that layout, creates btrfs subvolumes on the "nixos" partition,
-# mounts everything and runs nixos-install from this repository.
+# mounts everything, clones the repository and runs nixos-install from it.
 #
-# Usage (from the cloned repository): sudo ./install.sh
+# Usage on the live ISO:
+#   sudo nix --extra-experimental-features "nix-command flakes" run github:AntrelL/antrel-os
 set -euo pipefail
 
 readonly HOST=uiux-2680
@@ -18,8 +19,7 @@ readonly MAX_GIB=45
 readonly SUBVOLS=(@ @home @nix)
 readonly MNT=/mnt
 
-REPO=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-readonly REPO
+readonly REPO_URL=https://github.com/AntrelL/antrel-os
 
 die() { printf '\n\e[31mОШИБКА:\e[0m %s\n' "$*" >&2; exit 1; }
 ok() { printf '  \e[32m✓\e[0m %s\n' "$*"; }
@@ -37,13 +37,14 @@ trap cleanup EXIT
 # ---------------------------------------------------------------- checks ---
 step "Проверки (ничего не меняется)"
 
-[[ $EUID -eq 0 ]] || die "запустите через sudo: sudo ./install.sh"
-[[ -f "$REPO/flake.nix" && -d "$REPO/hosts/$HOST" ]] || die "скрипт должен лежать в корне репозитория antrel-os"
-ok "репозиторий: $REPO"
+[[ $EUID -eq 0 ]] || die "запустите через sudo"
 
 curl -fsS --max-time 15 -o /dev/null https://cache.nixos.org/nix-cache-info ||
   die "нет интернета (cache.nixos.org недоступен)"
 ok "интернет есть"
+
+git ls-remote --exit-code "$REPO_URL" HEAD >/dev/null || die "репозиторий $REPO_URL недоступен"
+ok "репозиторий доступен: $REPO_URL"
 
 esp=$(blkid -U "$ESP_UUID" || true)
 [[ -n "$esp" ]] || die "EFI-раздел Windows (UUID $ESP_UUID) не найден"
@@ -88,7 +89,7 @@ cat <<EOF
 Будет сделано:
   1. на $root созданы подтома btrfs: ${SUBVOLS[*]}
   2. $root смонтирован в $MNT, EFI-раздел $esp в $MNT/boot/efi (без форматирования)
-  3. репозиторий скопирован в $MNT/home/$USER_NAME/antrel-os
+  3. репозиторий склонирован в $MNT/home/$USER_NAME/antrel-os
   4. установлена система $HOST (GRUB, пункт «Windows 11» в меню загрузки)
 Windows и её разделы не меняются, кроме добавления GRUB на EFI-раздел.
 
@@ -118,11 +119,8 @@ step "Репозиторий"
 dest="$MNT/home/$USER_NAME/antrel-os"
 mkdir -p "$(dirname "$dest")"
 rm -rf "$dest"
-cp -a "$REPO" "$dest"
-# nixos-install runs as root; git refuses repositories owned by another user (the live ISO's "nixos").
-chown -R root:root "$dest"
-rm -f "$dest"/result "$dest"/result-*
-ok "$dest"
+git clone --quiet "$REPO_URL" "$dest"
+ok "$dest ($(git -C "$dest" log -1 --format='%h %s'))"
 # Kept for comparison with hosts/$HOST/hardware.nix after the first boot.
 nixos-generate-config --root "$MNT" --show-hardware-config >"$MNT/home/$USER_NAME/hardware-generated.nix"
 ok "сгенерированный hardware-config: $MNT/home/$USER_NAME/hardware-generated.nix"

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only
 # Happ proxy client, repackaged from the vendor .deb (closed source, freely redistributable).
 # Based on https://github.com/MrShitFox/happ-nixos (GPL-3.0).
 # Update: bump `version`, then `nix store prefetch-file <url>` for the new hash.
