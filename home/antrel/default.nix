@@ -34,6 +34,12 @@
     };
   };
 
+  # `gh auth login` once; git then pushes to GitHub through gh's credentials.
+  programs.gh = {
+    enable = true;
+    gitCredentialHelper.enable = true;
+  };
+
   # GTK4 (Nautilus etc.) skips hinting by default since 4.16 and looks soft at ~96 DPI.
   # GTK reads these through the settings portal.
   dconf.settings."org/gnome/desktop/interface" = {
