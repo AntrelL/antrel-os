@@ -57,7 +57,7 @@ docs/design/              визуальные референсы
 | Плата | HUANANZHI X99-QD4 (UEFI, Secure Boot выключен) |
 | CPU | Intel Xeon E5-2680 v4, 14 ядер / 28 потоков |
 | RAM | 16 ГБ |
-| GPU | NVIDIA GeForce RTX 3070 «Frankenstein» (мобильный GA104) |
+| GPU | NVIDIA GeForce RTX 3070 «Frankenstein» (мобильный GA104); работает с драйвером NVIDIA — проверено на Fedora (akmod-nvidia) |
 | Диск | NVMe 477 ГБ, общий с Windows 11 |
 | Звук | Arturia MiniFuse 1 + встроенный |
 | Сеть | Realtek GbE |
