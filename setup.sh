@@ -259,6 +259,15 @@ home_files() {
   else
     warn "не удалось применить настройки шрифтов GTK4 (gsettings)"
   fi
+
+  # Mouse in the spare GNOME session: same as hyprland.lua (Windows 6/20 = ×0.5, no acceleration).
+  if as_user dbus-run-session -- sh -c '
+      gsettings set org.gnome.desktop.peripherals.mouse accel-profile flat &&
+      gsettings set org.gnome.desktop.peripherals.mouse speed -0.5'; then
+    ok "мышь в GNOME: без ускорения, скорость как в Windows"
+  else
+    warn "не удалось настроить мышь в GNOME (gsettings)"
+  fi
 }
 
 agent() {

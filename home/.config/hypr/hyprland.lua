@@ -47,7 +47,10 @@ hl.config({
     input = {
         kb_layout = "us,ru", -- antrel-os: Russian layout; Super+X switches
         follow_mouse = 1,
-        sensitivity = 0.5,
+        -- antrel-os: same feel as Windows, where the pointer slider is 6/20 (×0.5) and
+        -- "Enhance pointer precision" is off. Flat = no acceleration; libinput's flat factor is 1 + sensitivity.
+        accel_profile = "flat",
+        sensitivity = -0.5,
         touchpad = {
             natural_scroll = false,
             tap_to_click = true,
