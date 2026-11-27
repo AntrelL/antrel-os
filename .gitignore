@@ -8,6 +8,8 @@
 /home/.config/gtk-4.0/colors.css
 /home/.config/btop/themes/43pr.theme
 /home/.config/cava/themes/43pr
+# Fastfetch logo: 43PR cuts it from the avatar (quickshell/imgs/pfp_custom, tracked).
+/home/.config/quickshell/imgs/pfp_anim.gif
 
 # Private: notes and reminders from the side panel (Super+C). The repository is public.
 /home/.config/quickshell/state/todo-state.json
