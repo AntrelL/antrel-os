@@ -234,6 +234,20 @@ home_files() {
     warn "у пакета happ нет ярлыка в /usr/share/applications: XWayland-обход не применён"
   fi
 
+  # Vesktop (Flatpak) sees only its own ~/.var/app folder; let it follow the links into this repository.
+  as_user flatpak override --user --filesystem="$repo/home/.var/app/dev.vencord.Vesktop" dev.vencord.Vesktop
+  # Standard Discord icon instead of Vesktop's: the official one (Flathub listing by Discord Inc.) installed
+  # under its own name, so the Papirus theme can't swap it. Tray icons are Vesktop userAssets in the repo.
+  local vesktop=/var/lib/flatpak/exports/share/applications/dev.vencord.Vesktop.desktop
+  if [[ -f $vesktop ]]; then
+    as_user mkdir -p "$home/.local/share/applications"
+    sed 's|^Icon=.*|Icon=antrel-discord|' "$vesktop" |
+      as_user tee "$home/.local/share/applications/dev.vencord.Vesktop.desktop" >/dev/null
+    ok "Vesktop: значок Discord, доступ к своим настройкам в репозитории"
+  else
+    warn "нет $vesktop: значок Vesktop не заменён"
+  fi
+
   as_user xdg-user-dirs-update
 
   # 43PR theme: first run starts from the bundled wallpaper; later runs re-apply the tracked state.json

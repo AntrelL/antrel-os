@@ -26,3 +26,6 @@ Pictures/Wallpapers
 .config/fontconfig
 .config/environment.d
 .config/git
+# Vesktop: tray icons (standard Discord), and the Discord icon its menu entry uses (setup.sh)
+.var/app/dev.vencord.Vesktop/config/vesktop/userAssets
+.local/share/icons/hicolor/256x256/apps/antrel-discord.png
