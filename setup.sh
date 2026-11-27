@@ -259,9 +259,11 @@ papirus_folders() {
 nvidia() {
   rpm -q akmod-nvidia >/dev/null || die "akmod-nvidia is not installed (see the Apps part above)"
   # akmods packaging lets autoremove drop the driver's build chain; keep it.
-  dnf mark user akmod-nvidia
+  # (exits 1 with "Nothing to do" when it is already marked, i.e. on every run after the first)
+  dnf mark user akmod-nvidia >/dev/null 2>&1 || true
   # The module is built for the newest installed kernel: the one that boots next.
   local kernel
+  rpm -q kernel-core >/dev/null || die "no kernel-core package installed: nothing to build the driver for"
   kernel=$(rpm -q kernel-core --qf '%{VERSION}-%{RELEASE}.%{ARCH}\n' | sort -V | tail -n1)
   akmods --force --kernels "$kernel"
   modinfo -F version nvidia -k "$kernel" >/dev/null ||
