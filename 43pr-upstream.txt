@@ -1,0 +1,3 @@
+# The 43PR desktop in home/ is a fork of https://github.com/43PR/dotfiles (MIT, see home/.config/43pr/LICENSE.43PR).
+# Vendored from this upstream commit; every local change is marked with an "antrel-os" comment.
+e9de4b269c6f439b6519c5adec6deb28639e2cfb

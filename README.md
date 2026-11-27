@@ -15,9 +15,9 @@
 | Видео | NVIDIA из RPM Fusion (`akmod-nvidia`, открытые модули ядра), VA-API |
 | Звук | PipeWire |
 | Отзывчивость | `scx_bpfland` через `scx_loader`, повышенный вес CPU пользовательской сессии |
-| Рабочий стол | Hyprland (uwsm) + Dux Shell (`dms`) |
-| Шрифты | Inter, JetBrainsMono Nerd Font; субпиксельное сглаживание, хинтинг, stem darkening |
-| Программы | Firefox, kitty, Nautilus, Starship, Happ (VPN), omp |
+| Рабочий стол | Hyprland (uwsm) + рабочий стол [43PR](https://github.com/43PR/dotfiles): панель, меню и окно настроек на Quickshell, лаунчер rofi, 27 тем и цвета от обоев |
+| Шрифты | JetBrains Mono, Iosevka и Symbols Nerd Fonts, Inter; субпиксельное сглаживание, хинтинг, stem darkening |
+| Программы | Firefox, kitty + zsh + Starship, Thunar, Vesktop (Discord), Happ (VPN), omp |
 
 ## Как устроен репозиторий
 
@@ -27,37 +27,41 @@ packages/dnf.txt          программы из репозиториев Fedor
 packages/copr.txt         подключаемые COPR-репозитории (и какие пакеты из них можно брать)
 packages/flatpak.txt      программы с Flathub
 system/                   системные файлы: копируются в / как есть (system/etc/... → /etc/...)
-home/                     настройки пользователя: лежат здесь, в ~ на них ссылки
+home/                     настройки пользователя: лежат здесь, в ~ на них ссылки (рабочий стол 43PR — тоже здесь)
 links.txt                 какие пути из home/ связаны ссылками с ~
+43pr-upstream.txt         с какой версии 43PR взят рабочий стол; наши правки помечены комментарием «antrel-os»
 track.sh                  взять новую настройку под git: ./track.sh ~/.config/что-то
 AGENTS.md                 контекст для агента: решения, правила, чек-лист первой загрузки
 docs/design/              визуальные референсы
 ```
 
 Настройки из `home/` подключены ссылками: `~/.config/hypr` — это `~/antrel-os/home/.config/hypr`. Любое
-изменение (руками, агентом или из окна настроек программы) сразу видно в git, остаётся сделать коммит.
+изменение (руками, агентом или в окне настроек 43PR, Super+I) сразу видно в git, остаётся сделать коммит.
+Тема и обои тоже здесь: `home/.local/state/43pr` и `home/Pictures/Wallpapers` (видеообои в git не попадают).
 
 ## Горячие клавиши
 
-Повторяют Windows, где есть аналог. Полный список: `home/.config/hypr/hyprland.lua`.
+Как у 43PR (Super — клавиша Win). Любую можно поменять в Super+I → Keybinds.
 
 | Клавиши | Действие |
 |---|---|
-| Win / Win+Space | лаунчер |
-| Win+Enter / Win+E / Win+B | терминал / файлы / браузер |
-| Win+L | блокировка |
-| Win+V | история буфера обмена |
-| Win+I / Win+A / Win+N | настройки оболочки / быстрые настройки / уведомления |
-| Win+Tab | обзор рабочих столов |
-| Win+X | меню питания |
-| Alt+Tab | следующее окно |
-| Alt+F4 / Win+Q | закрыть окно |
-| Win+F / Win+Shift+F | полный экран / плавающее окно |
-| Win+стрелки / Win+Shift+стрелки | фокус / переместить окно (и между мониторами) |
-| Win+1…0 / Win+Shift+1…0 | рабочий стол / отправить окно на рабочий стол |
-| Win+Shift+S / Print | скриншот области / экрана в буфер |
-| Ctrl+Shift+Esc | список процессов |
-| Alt+Shift | раскладка us/ru |
+| Super+D | приложения (лаунчер) |
+| Super+T / Super+E / Super+B | терминал / файлы / браузер |
+| Super+Q | закрыть окно |
+| Super+F / Super+Space | полный экран / плавающее окно |
+| Super+1, 2, 3… / Super+Shift+1, 2… | рабочий стол / отправить окно на рабочий стол |
+| Super+H/J/K/L / Super+Shift+H/J/K/L | фокус / переместить окно; Super + левая/правая кнопка мыши — двигать/менять размер |
+| Super+I | настройки (система, внешний вид, темы, клавиши) |
+| Super+S / Super+C / Super+W | боковая панель / заметки и напоминания / выбор обоев |
+| Super+V | история буфера обмена |
+| Super+O / Super+. | прозрачность окон / тёмная и светлая тема |
+| Super+X | раскладка us/ru |
+| Super+Tab / Super+` | блокировка / меню выхода |
+| Delete / Shift+Delete | скриншот экрана / области |
+| Shift+F12 | распознать текст с экрана (OCR) |
+| Super+R / Super+M | запись экрана / выключить микрофон |
+| Super+Shift+C / Super+Shift+W | пипетка цвета / спрятать панель |
+| Super+колесо мыши | лупа |
 
 ## Железо
 
@@ -120,15 +124,16 @@ curl -fsSL https://raw.githubusercontent.com/AntrelL/antrel-os/main/setup.sh | s
 1. `sudo reboot`.
 2. На экране входа: выбрать пользователя → шестерёнка внизу справа → **«Hyprland (uwsm-managed)»** → пароль.
    Экран входа запомнит выбор; GNOME остаётся в том же меню как запасной вариант.
-3. **VPN:** Win → `Happ` → добавить подписку (ссылка из Happ на Windows; в репозитории её нет) → подключиться.
-4. **GitHub:** в терминале (Win+Enter) `gh auth login`.
+3. **VPN:** Super+D → `Happ` → добавить подписку (ссылка из Happ на Windows; в репозитории её нет) → подключиться.
+4. **GitHub:** в терминале (Super+T) `gh auth login`.
 5. **Агент:** при включённом VPN `cd ~/antrel-os && omp`, первая просьба: «пройди чек-лист после первой загрузки».
 
 ## Ежедневная работа
 
 ```sh
 sudo dnf upgrade                 # обновить систему
-sudo ~/antrel-os/setup.sh        # применить изменения из packages/ и system/ (повторный запуск безопасен)
+sudo ~/antrel-os/setup.sh        # применить изменения из packages/ и system/ (повторный запуск безопасен);
+                                 # то же самое — кнопка UPDATE DESKTOP в Super+I → Updates
 ~/antrel-os/track.sh ~/.config/X # взять под git настройки новой программы
 ```
 

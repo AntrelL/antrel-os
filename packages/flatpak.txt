@@ -1,2 +1,5 @@
 # Flathub apps installed by setup.sh (`flatpak install flathub <id>`), one app id per line.
-# Example: org.telegram.desktop
+# Prefer apps with Flathub's "verified" badge (published by the developer).
+
+# Vesktop: Discord client with Vencord (verified: vencord.dev)
+dev.vencord.Vesktop

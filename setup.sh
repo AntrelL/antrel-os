@@ -12,8 +12,14 @@ set -euo pipefail
 
 readonly REPO_URL=https://github.com/AntrelL/antrel-os
 readonly HAPP_RPM=https://github.com/Happ-proxy/happ-desktop/releases/latest/download/Happ.linux.x64.rpm
-readonly NERD_FONT_ZIP=https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.zip
-readonly NERD_FONT_DIR=/usr/local/share/fonts/JetBrainsMonoNerdFont
+# Nerd Fonts the 43PR desktop uses (bar icons, rofi, terminal), from the project's own releases.
+readonly NERD_FONTS=(JetBrainsMono Iosevka NerdFontsSymbolsOnly)
+readonly NERD_FONTS_URL=https://github.com/ryanoasis/nerd-fonts/releases/latest/download
+readonly NERD_FONTS_DIR=/usr/local/share/fonts/NerdFonts
+# Not packaged by Fedora: zsh-autocomplete (git) and papirus-folders (single script), both from their authors.
+readonly ZSH_AUTOCOMPLETE_REPO=https://github.com/marlonrichert/zsh-autocomplete
+readonly ZSH_AUTOCOMPLETE_DIR=/usr/local/share/zsh-autocomplete
+readonly PAPIRUS_FOLDERS_URL=https://raw.githubusercontent.com/PapirusDevelopmentTeam/papirus-folders/master/papirus-folders
 
 die() { printf '\n\e[31mОШИБКА:\e[0m %s\n' "$*" >&2; exit 1; }
 warn() { printf '  \e[33m!\e[0m %s\n' "$*" >&2; }
@@ -56,11 +62,11 @@ confirm() {
 
 Будет сделано:
   1. dnf: самое быстрое зеркало, параллельная загрузка; обновление системы
-  2. репозитории: RPM Fusion, COPR из packages/copr.txt
-  3. программы из packages/dnf.txt и packages/flatpak.txt, Happ, шрифт JetBrainsMono Nerd Font
+  2. репозитории: RPM Fusion, COPR из packages/copr.txt; полный ffmpeg из RPM Fusion
+  3. программы из packages/dnf.txt и packages/flatpak.txt, Happ, Nerd Fonts, zsh-autocomplete, papirus-folders
   4. драйвер NVIDIA (сборка модуля ядра, до 10 минут)
-  5. системные файлы из system/, планировщик scx_bpfland, Dux Shell для сессии Hyprland
-  6. настройки из home/ ссылками в $home (список: links.txt); агент omp
+  5. системные файлы из system/, планировщик scx_bpfland, zsh — оболочка по умолчанию
+  6. рабочий стол 43PR и настройки из home/ ссылками в $home (список: links.txt), тема; агент omp
 Windows и разделы диска не меняются.
 
 EOF
@@ -87,15 +93,23 @@ repos() {
     "https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$fedora.noarch.rpm"
   ok "RPM Fusion"
 
-  local project pkgs
-  while read -r project pkgs; do
+  # Each line: owner/project [only=a,b | except=a,b]
+  local project filter repoid
+  while read -r project filter; do
     dnf -y copr enable "$project"
-    if [[ -n $pkgs ]]; then
-      # Only the listed packages may come from this COPR; it must not replace Fedora's own.
-      dnf config-manager setopt "copr:copr.fedorainfracloud.org:${project/\//:}.includepkgs=${pkgs// /,}"
-    fi
-    ok "COPR $project${pkgs:+ (только: $pkgs)}"
+    repoid="copr:copr.fedorainfracloud.org:${project/\//:}"
+    case $filter in
+      only=*) dnf config-manager setopt "$repoid.includepkgs=${filter#only=}" ;;
+      except=*) dnf config-manager setopt "$repoid.excludepkgs=${filter#except=}" ;;
+      "") ;;
+      *) die "packages/copr.txt: непонятное '$filter' у $project (ожидается only=… или except=…)" ;;
+    esac
+    ok "COPR $project${filter:+ ($filter)}"
   done < <(list "$repo/packages/copr.txt")
+
+  # RPM Fusion's full ffmpeg replaces Fedora's patent-free build (and its libraries) in one transaction.
+  dnf -y swap ffmpeg-free ffmpeg --allowerasing
+  ok "ffmpeg из RPM Fusion"
 }
 
 packages() {
@@ -116,16 +130,30 @@ packages() {
   fi
   ok "Flatpak: ${#flatpaks[@]} программ"
 
-  if [[ ! -d $NERD_FONT_DIR ]]; then
-    local zip
+  local font zip
+  for font in "${NERD_FONTS[@]}"; do
+    [[ -d $NERD_FONTS_DIR/$font ]] && continue
     zip=$(mktemp --suffix=.zip)
-    curl -fsSLo "$zip" "$NERD_FONT_ZIP"
-    mkdir -p "$NERD_FONT_DIR"
-    unzip -q -o "$zip" '*.ttf' -d "$NERD_FONT_DIR"
+    curl -fsSLo "$zip" "$NERD_FONTS_URL/$font.zip"
+    mkdir -p "$NERD_FONTS_DIR/$font"
+    unzip -q -o "$zip" '*.ttf' -d "$NERD_FONTS_DIR/$font"
     rm -f "$zip"
-    fc-cache -f
+  done
+  fc-cache -f
+  ok "Nerd Fonts: ${NERD_FONTS[*]} (обновить: удалить $NERD_FONTS_DIR/<шрифт> и запустить снова)"
+
+  if [[ -d $ZSH_AUTOCOMPLETE_DIR/.git ]]; then
+    git -C "$ZSH_AUTOCOMPLETE_DIR" pull -q --ff-only
+  else
+    git clone -q --depth 1 "$ZSH_AUTOCOMPLETE_REPO" "$ZSH_AUTOCOMPLETE_DIR"
   fi
-  ok "JetBrainsMono Nerd Font (обновить: удалить $NERD_FONT_DIR и запустить снова)"
+  ok "zsh-autocomplete"
+
+  # White folder icons, as in 43PR. A papirus-icon-theme update resets them; the next setup.sh run restores them.
+  curl -fsSLo /usr/local/bin/papirus-folders "$PAPIRUS_FOLDERS_URL"
+  chmod 0755 /usr/local/bin/papirus-folders
+  papirus-folders -C white >/dev/null
+  ok "белые папки Papirus"
 }
 
 nvidia() {
@@ -166,9 +194,12 @@ EOF
 
   systemctl enable scx_loader.service
   ok "scx_loader (scx_bpfland) включится после перезагрузки"
-  # For every user; system/etc/systemd/user/dms.service.d keeps it out of GNOME.
-  systemctl --global enable dms.service
-  ok "Dux Shell запускается в сессии Hyprland"
+
+  # 43PR's terminal setup is zsh (~/.zshrc from the repo).
+  if [[ $(getent passwd "$user" | cut -d: -f7) != /bin/zsh ]]; then
+    usermod -s /bin/zsh "$user"
+  fi
+  ok "zsh — оболочка по умолчанию для $user"
 }
 
 home_files() {
@@ -203,6 +234,21 @@ home_files() {
     warn "у пакета happ нет ярлыка в /usr/share/applications: XWayland-обход не применён"
   fi
 
+  as_user xdg-user-dirs-update
+
+  # 43PR theme: first run starts from the bundled wallpaper; later runs re-apply the tracked state.json
+  # (theme.py writes colors for kitty, rofi, GTK, btop, cava, Hyprland and the bar).
+  local theme=$home/.config/43pr/bin/theme.py
+  if ! grep -q '"wallpaper"' "$home/.local/state/43pr/state.json" 2>/dev/null; then
+    as_user dbus-run-session -- python3 "$theme" wallpaper "$home/Pictures/Wallpapers/wallhaven-k8jvm7.jpg" ||
+      warn "не удалось применить обои по умолчанию"
+  fi
+  if as_user dbus-run-session -- python3 "$theme" apply; then
+    ok "тема 43PR применена"
+  else
+    warn "theme.py apply завершился с ошибкой: тема применится при первом входе в Hyprland (Super+I → темы)"
+  fi
+
   # GTK4 (Nautilus etc.) skips hinting by default since 4.16 and looks soft at ~96 DPI.
   if as_user dbus-run-session -- sh -c '
       gsettings set org.gnome.desktop.interface font-rendering manual &&
@@ -232,6 +278,7 @@ done_message() {
 Перезагрузитесь: sudo reboot
 На экране входа: выбрать пользователя → значок шестерёнки внизу справа → «Hyprland (uwsm-managed)».
 Экран входа запомнит выбор. GNOME остаётся запасным рабочим столом.
+В Hyprland: Super+D — приложения, Super+T — терминал, Super+I — настройки (там же все горячие клавиши).
 EOF
 }
 

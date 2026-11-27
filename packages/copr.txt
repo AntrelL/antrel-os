@@ -1,11 +1,12 @@
-# COPR repositories enabled by setup.sh: `owner/project [only these packages]`.
-# A package list limits the COPR to those packages so it cannot replace Fedora's own.
+# COPR repositories enabled by setup.sh, one per line:
+#   owner/project                       everything from it
+#   owner/project only=a,b              only these packages (it must not replace anything else)
+#   owner/project except=a,b            everything but these (Fedora's own versions win)
 
-# Hyprland, uwsm, xdg-desktop-portal-hyprland (Fedora's own hyprland package is orphaned)
-sdegler/hyprland
-# Dux Shell (`dms`) from its developers; pulls duxlabs/dux-repo (quickshell) automatically
-duxlabs/dms
+# Hyprland and its ecosystem; the COPR the Hyprland wiki points to for Fedora (sources: github.com/LionHeartP/hyprlandRPM).
+# Also newer quickshell and matugen than Fedora's, which 43PR needs. kitty, cliphist, qt6ct stay Fedora's.
+lionheartp/Hyprland except=kitty*,cliphist,qt6ct
 # scx schedulers and scx_loader; the rest of this COPR is CachyOS tuning we don't want
-bieszczaders/kernel-cachyos-addons scx-scheds scx-tools
-# Starship prompt (not packaged by Fedora)
+bieszczaders/kernel-cachyos-addons only=scx-scheds,scx-tools
+# Starship prompt; the COPR Starship's own README lists for Fedora
 atim/starship

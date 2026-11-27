@@ -1,0 +1,23 @@
+# Written by 43PR's theme.py from the templates and ~/.local/state/43pr/state.json (both tracked):
+# setup.sh regenerates them, so they never need to be committed.
+/home/.config/kitty/matugen.conf
+/home/.config/rofi/colors.rasi
+/home/.config/hypr/hyprlock-colors.conf
+/home/.config/hypr/colors.lua
+/home/.config/gtk-3.0/colors.css
+/home/.config/gtk-4.0/colors.css
+/home/.config/btop/themes/43pr.theme
+/home/.config/cava/themes/43pr
+
+# Private: notes and reminders from the side panel (Super+C). The repository is public.
+/home/.config/quickshell/state/todo-state.json
+
+# Live (video) wallpapers are too big for git; pictures are tracked.
+/home/Pictures/Wallpapers/*.mp4
+/home/Pictures/Wallpapers/*.webm
+/home/Pictures/Wallpapers/*.mkv
+/home/Pictures/Wallpapers/*.mov
+/home/Pictures/Wallpapers/*.gif
+
+# Thumbnail and other caches some apps put next to their config.
+__pycache__/

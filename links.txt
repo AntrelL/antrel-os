@@ -1,8 +1,28 @@
 # Paths under ~ that live in this repository (home/<path>) and are symlinked back by setup.sh.
-# Add new ones with ./track.sh. Never add secrets: ~/.config/gh, ~/.config/happ, browser profiles.
+# Add new ones with ./track.sh. Never add secrets: ~/.config/gh, ~/.config/happ, browser profiles,
+# Vesktop's sessionData (Discord login).
+
+# 43PR desktop (vendored from github.com/43PR/dotfiles, see 43pr-upstream.txt)
+.config/43pr
+.config/btop
+.config/cava
+.config/fastfetch
+.config/gtk-3.0
+.config/gtk-4.0
 .config/hypr
 .config/kitty
+.config/matugen
+.config/nwg-look
+.config/quickshell
+.config/rofi
+.config/xed
+.config/starship.toml
+.zshrc
+# Theme choice (preset or wallpaper colors) and the wallpapers themselves
+.local/state/43pr
+Pictures/Wallpapers
+
+# antrel-os additions
 .config/fontconfig
 .config/environment.d
 .config/git
-.bashrc.d

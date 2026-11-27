@@ -1,18 +1,101 @@
 # Fedora packages installed by setup.sh (`dnf install`), on top of Fedora Workstation.
-# One package per line. Happ is not here: setup.sh installs the vendor's latest .rpm.
+# One package per line. Sources: packages/copr.txt says which come from COPR; the rest is Fedora + RPM Fusion.
+# Not here: Happ (vendor .rpm), Nerd Fonts and zsh-autocomplete (upstream releases/git), see setup.sh.
 
-# Desktop: Hyprland under uwsm (systemd session), Dux Shell (`dms`) on top
+# Desktop: Hyprland under uwsm (systemd session), lock screen, password prompts
 hyprland
 uwsm
+hyprlock
+hyprpolkitagent
 xdg-desktop-portal-hyprland
 xdg-desktop-portal-gtk
-dms
-kitty
-nautilus
-# Screenshots: Win+Shift+S / Print in hyprland.lua
+xorg-x11-server-Xwayland
+xdg-user-dirs
+xdg-utils
+
+# 43PR shell: bar, menus and settings are Quickshell (`qs`); colors from wallpaper (matugen)
+quickshell
+qt6-qtwayland
+qt6-qt5compat
+python3
+python3-gobject
+jq
+socat
+matugen
+rofi
+libnotify
+sound-theme-freedesktop
+
+# Wallpapers: static (awww) and live video (mpvpaper)
+awww
+mpvpaper
+mpv
+
+# Screenshots, screen recording (Super+R), text recognition (Shift+F12), clipboard history
 grim
 slurp
+gpu-screen-recorder
+tesseract
+tesseract-langpack-eng
+tesseract-langpack-rus
 wl-clipboard
+cliphist
+ImageMagick
+
+# Network, sound, power (tuned-ppd from Workstation answers the bar's power-profile requests)
+NetworkManager
+network-manager-applet
+nm-connection-editor
+pipewire
+pipewire-pulseaudio
+pulseaudio-utils
+wireplumber
+pavucontrol
+playerctl
+upower
+brightnessctl
+gammastep
+lm_sensors
+dmidecode
+
+# Terminal: kitty + zsh with suggestions and highlighting, starship prompt, eza
+kitty
+zsh
+zsh-autosuggestions
+zsh-syntax-highlighting
+starship
+eza
+
+# Files: Thunar with archives, removable drives and thumbnails; text editor; disk usage; dialogs
+Thunar
+thunar-volman
+thunar-archive-plugin
+gvfs
+tumbler
+ffmpegthumbnailer
+xed
+ncdu
+zenity
+
+# Look: GTK theme, icons, GTK settings app
+adw-gtk3-theme
+papirus-icon-theme
+nwg-look
+
+# Monitors and terminal toys
+btop
+nvtop
+htop
+fastfetch
+cava
+cmatrix
+
+# Fonts (JetBrainsMono/Iosevka/Symbols Nerd Fonts come from their GitHub releases, see setup.sh)
+jetbrains-mono-fonts
+google-roboto-mono-fonts
+rsms-inter-fonts
+google-noto-color-emoji-fonts
+fontawesome-fonts-all
 
 # NVIDIA: driver built for each new kernel (akmods), nvidia-smi/CUDA, VA-API video decoding
 akmod-nvidia
@@ -23,15 +106,9 @@ libva-nvidia-driver
 scx-scheds
 scx-tools
 
-# Fonts (JetBrainsMono Nerd Font comes from its GitHub release, see setup.sh)
-rsms-inter-fonts
-google-noto-color-emoji-fonts
-
 # Tools
 git
 gh
-htop
-starship
+curl
 unzip
-# Part of Workstation already; listed so setup.sh never depends on it being there
 flatpak
