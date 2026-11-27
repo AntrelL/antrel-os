@@ -1,0 +1,37 @@
+# Fedora packages installed by setup.sh (`dnf install`), on top of Fedora Workstation.
+# One package per line. Happ is not here: setup.sh installs the vendor's latest .rpm.
+
+# Desktop: Hyprland under uwsm (systemd session), Dux Shell (`dms`) on top
+hyprland
+uwsm
+xdg-desktop-portal-hyprland
+xdg-desktop-portal-gtk
+dms
+kitty
+nautilus
+# Screenshots: Win+Shift+S / Print in hyprland.lua
+grim
+slurp
+wl-clipboard
+
+# NVIDIA: driver built for each new kernel (akmods), nvidia-smi/CUDA, VA-API video decoding
+akmod-nvidia
+xorg-x11-drv-nvidia-cuda
+libva-nvidia-driver
+
+# Responsiveness under load: sched_ext schedulers + scx_loader service
+scx-scheds
+scx-tools
+
+# Fonts (JetBrainsMono Nerd Font comes from its GitHub release, see setup.sh)
+rsms-inter-fonts
+google-noto-color-emoji-fonts
+
+# Tools
+git
+gh
+htop
+starship
+unzip
+# Part of Workstation already; listed so setup.sh never depends on it being there
+flatpak

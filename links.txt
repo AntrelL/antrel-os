@@ -1,0 +1,8 @@
+# Paths under ~ that live in this repository (home/<path>) and are symlinked back by setup.sh.
+# Add new ones with ./track.sh. Never add secrets: ~/.config/gh, ~/.config/happ, browser profiles.
+.config/hypr
+.config/kitty
+.config/fontconfig
+.config/environment.d
+.config/git
+.bashrc.d

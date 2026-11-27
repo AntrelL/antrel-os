@@ -1,0 +1,2 @@
+# Flathub apps installed by setup.sh (`flatpak install flathub <id>`), one app id per line.
+# Example: org.telegram.desktop

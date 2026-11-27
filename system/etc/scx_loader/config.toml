@@ -1,0 +1,4 @@
+# sched_ext scheduler that recognises interactive tasks (compositor, input, focused apps)
+# by behaviour and runs them ahead of CPU-bound work. Switch at runtime: scxctl.
+default_sched = "scx_bpfland"
+default_mode = "Auto"

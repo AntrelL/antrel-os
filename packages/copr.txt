@@ -1,0 +1,11 @@
+# COPR repositories enabled by setup.sh: `owner/project [only these packages]`.
+# A package list limits the COPR to those packages so it cannot replace Fedora's own.
+
+# Hyprland, uwsm, xdg-desktop-portal-hyprland (Fedora's own hyprland package is orphaned)
+sdegler/hyprland
+# Dux Shell (`dms`) from its developers; pulls duxlabs/dux-repo (quickshell) automatically
+duxlabs/dms
+# scx schedulers and scx_loader; the rest of this COPR is CachyOS tuning we don't want
+bieszczaders/kernel-cachyos-addons scx-scheds scx-tools
+# Starship prompt (not packaged by Fedora)
+atim/starship

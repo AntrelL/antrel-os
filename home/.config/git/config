@@ -1,0 +1,10 @@
+[user]
+	name = AntrelL
+	email = Nikitagaliant03@bk.ru
+# `gh auth login` once; git then pushes to GitHub with gh's credentials (stored outside this repo).
+[credential "https://github.com"]
+	helper =
+	helper = !/usr/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+	helper =
+	helper = !/usr/bin/gh auth git-credential
