@@ -15,9 +15,10 @@ readonly HAPP_RELEASE_API=https://api.github.com/repos/Happ-proxy/happ-desktop/r
 readonly TIMEZONE=Europe/Minsk
 
 die() { printf '\n\e[31mERROR:\e[0m %s\n' "$*" >&2; exit 1; }
-fail() { printf '  \e[31m✗\e[0m %s\n' "$*" >&2; }
+# √ and x, not ✓ and ✗: install.sh runs this on the live USB's text console, whose font has no ✓.
+fail() { printf '  \e[31mx\e[0m %s\n' "$*" >&2; }
 warn() { printf '  \e[33m!\e[0m %s\n' "$*" >&2; }
-ok() { printf '  \e[32m✓\e[0m %s\n' "$*"; }
+ok() { printf '  \e[32m√\e[0m %s\n' "$*"; }
 step() { printf '\n\e[1m== %s\e[0m\n' "$*"; }
 
 # Non-comment, non-empty lines of a list file.
