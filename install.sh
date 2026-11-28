@@ -543,15 +543,19 @@ partition() {
     mkfs.fat -F 32 -n EFI "$esp" >/dev/null
     ok "EFI partition $esp"
   fi
+  # Leftovers from Windows or an old system can make mount's type detection give up (it then tries ext4),
+  # so the old signatures go first and every mount names its type.
+  wipefs -aq "$target"
   mkfs.btrfs -q -f -L "$LABEL" "$target"
-  mount "$target" "$MNT"
+  udevadm settle
+  mount -t btrfs "$target" "$MNT"
   btrfs -q subvolume create "$MNT/@"
   btrfs -q subvolume create "$MNT/@home"
   umount "$MNT"
-  mount -o "$BTRFS_OPTS,subvol=@" "$target" "$MNT"
+  mount -t btrfs -o "$BTRFS_OPTS,subvol=@" "$target" "$MNT"
   mkdir -p "$MNT/home" "$MNT/efi"
-  mount -o "$BTRFS_OPTS,subvol=@home" "$target" "$MNT/home"
-  mount "$esp" "$MNT/efi"
+  mount -t btrfs -o "$BTRFS_OPTS,subvol=@home" "$target" "$MNT/home"
+  mount -t vfat "$esp" "$MNT/efi"
   ok "btrfs on $target (@ → /, @home → /home), EFI partition $esp → /efi"
 }
 
