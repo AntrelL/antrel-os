@@ -1,0 +1,3 @@
+# antrel-os: locales built by locale-gen (setup.sh runs it when this file changes).
+en_US.UTF-8 UTF-8
+ru_RU.UTF-8 UTF-8

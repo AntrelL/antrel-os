@@ -1,0 +1,56 @@
+# Packages installed by setup.sh (`pacman -Syu --needed`), one per line.
+# Only the official Arch repositories (core, extra). The AUR is not used, ever: no yay/paru, no makepkg of AUR
+# PKGBUILDs. Not here: Happ (the vendor's own pacman package, see setup.sh) and omp (its install script).
+
+# Base system: kernel, firmware, Intel microcode, btrfs, boot menu with Windows, network, sudo
+base
+linux
+linux-firmware
+intel-ucode
+btrfs-progs
+grub
+efibootmgr
+os-prober
+networkmanager
+sudo
+zram-generator
+man-db
+nano
+
+# NVIDIA: open kernel modules for the stock kernel (prebuilt, no compiling), VA-API video decoding
+nvidia-open
+nvidia-utils
+libva-nvidia-driver
+
+# Desktop: KDE Plasma (Wayland session; plasma-meta brings its login screen, Plasma Login Manager) and basic
+# apps: terminal, files, text editor, archives, screenshots
+plasma-meta
+konsole
+dolphin
+kate
+ark
+spectacle
+xdg-user-dirs
+
+# Sound
+pipewire
+pipewire-alsa
+pipewire-pulse
+wireplumber
+
+# Browser
+firefox
+
+# Fonts (fontconfig settings: home/.config/fontconfig)
+ttf-jetbrains-mono-nerd
+inter-font
+noto-fonts
+noto-fonts-emoji
+
+# Tools
+git
+github-cli
+curl
+
+# cmp, used by setup.sh (not part of base)
+diffutils
