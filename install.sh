@@ -605,6 +605,12 @@ setup() {
 bootloader() {
   step "Boot menu"
   arch-chroot "$MNT" grub-install --target=x86_64-efi --efi-directory=/efi --bootloader-id=antrel-os
+  # Some boards forget their boot entries (after a BIOS reset, for example) and then start only the fallback
+  # file EFI/BOOT/BOOTX64.EFI. Without Windows nothing is there: GRUB takes it. Windows' own one is kept.
+  if [[ ! -e $MNT/efi/EFI/BOOT/BOOTX64.EFI ]]; then
+    arch-chroot "$MNT" grub-install --target=x86_64-efi --efi-directory=/efi --removable
+    ok "GRUB also as the fallback boot file"
+  fi
   [[ -f $MNT/boot/grub/grub.cfg ]] || arch-chroot "$MNT" grub-mkconfig -o /boot/grub/grub.cfg
   ok "GRUB on the EFI partition, first in the boot order"
 }
