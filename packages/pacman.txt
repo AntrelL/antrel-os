@@ -1,0 +1,69 @@
+# Packages installed by setup.sh (`pacman -Syu --needed`), one per line.
+# Only the official Arch repositories (core, extra). The AUR is not used, ever: no yay/paru, no makepkg of AUR
+# PKGBUILDs. Not here: Happ (the vendor's own pacman package, see setup.sh) and omp (its install script).
+
+# Base system: kernel, firmware, Intel microcode, btrfs, boot menu with Windows, network, sudo
+base
+linux
+linux-firmware
+intel-ucode
+btrfs-progs
+grub
+efibootmgr
+os-prober
+networkmanager
+sudo
+zram-generator
+man-db
+nano
+
+# NVIDIA: open kernel modules for the stock kernel (prebuilt, no compiling), VA-API video decoding
+nvidia-open
+nvidia-utils
+libva-nvidia-driver
+
+# Responsiveness under load: sched_ext schedulers + scx_loader service (config in system/etc/scx_loader)
+scx-scheds
+scx-tools
+
+# Desktop: Hyprland as a systemd session (uwsm), portals, password prompts, XWayland
+hyprland
+uwsm
+xdg-desktop-portal-hyprland
+xdg-desktop-portal-gtk
+hyprpolkitagent
+xorg-xwayland
+qt6-wayland
+xdg-user-dirs
+xdg-utils
+
+# Temporary basics until the desktop shell is chosen: bar, launcher, notifications
+waybar
+fuzzel
+mako
+libnotify
+
+# Sound
+pipewire
+pipewire-alsa
+pipewire-pulse
+wireplumber
+pavucontrol
+
+# Apps: terminal, browser; screenshots and clipboard
+kitty
+firefox
+grim
+slurp
+wl-clipboard
+
+# Fonts (fontconfig settings: home/.config/fontconfig)
+ttf-jetbrains-mono-nerd
+inter-font
+noto-fonts
+noto-fonts-emoji
+
+# Tools
+git
+github-cli
+curl

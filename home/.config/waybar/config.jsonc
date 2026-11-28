@@ -1,0 +1,30 @@
+// antrel-os: temporary bar until the desktop shell is chosen. Look: Waybar's default style.css.
+{
+    "layer": "top",
+    "position": "top",
+    "height": 28,
+    "modules-left": ["hyprland/workspaces"],
+    "modules-center": ["clock"],
+    "modules-right": ["hyprland/language", "pulseaudio", "network", "tray"],
+    "clock": {
+        "format": "{:%a %d.%m  %H:%M}",
+        "tooltip-format": "{calendar}"
+    },
+    "hyprland/language": {
+        "format": "{short}"
+    },
+    "pulseaudio": {
+        "format": "vol {volume}%",
+        "format-muted": "muted",
+        "on-click": "pavucontrol"
+    },
+    "network": {
+        "format-ethernet": "net",
+        "format-wifi": "wifi {essid}",
+        "format-disconnected": "no net",
+        "tooltip-format": "{ifname} {ipaddr}"
+    },
+    "tray": {
+        "spacing": 8
+    }
+}

@@ -1,0 +1,16 @@
+# antrel-os: boot menu settings (copied by setup.sh, which then runs grub-mkconfig).
+GRUB_DEFAULT=0
+GRUB_TIMEOUT=5
+GRUB_DISTRIBUTOR="antrel-os"
+GRUB_CMDLINE_LINUX_DEFAULT="loglevel=3 quiet"
+GRUB_CMDLINE_LINUX=""
+GRUB_PRELOAD_MODULES="part_gpt part_msdos"
+
+# Text menu: graphical GRUB hangs on this X99 board in UEFI mode (seen with NixOS, nixpkgs#427235).
+GRUB_TERMINAL_INPUT=console
+GRUB_TERMINAL_OUTPUT=console
+
+# Windows Boot Manager in the menu.
+GRUB_DISABLE_OS_PROBER=false
+
+GRUB_DISABLE_RECOVERY=true

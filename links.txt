@@ -1,31 +1,19 @@
 # Paths under ~ that live in this repository (home/<path>) and are symlinked back by setup.sh.
-# Add new ones with ./track.sh. Never add secrets: ~/.config/gh, ~/.config/happ, browser profiles,
-# Vesktop's sessionData (Discord login).
+# Add new ones with ./track.sh. Never add secrets: ~/.config/gh, Happ's settings (VPN subscription),
+# browser profiles, keys, tokens.
 
-# 43PR desktop (vendored from github.com/43PR/dotfiles, see 43pr-upstream.txt)
-.config/43pr
-.config/btop
-.config/cava
-.config/fastfetch
-.config/gtk-3.0
-.config/gtk-4.0
+# Shell: login on the first console starts Hyprland
+.bash_profile
+.bashrc
+
+# Desktop (base, until the desktop shell is chosen)
 .config/hypr
+.config/waybar
 .config/kitty
-.config/matugen
-.config/nwg-look
-.config/quickshell
-.config/rofi
-.config/xed
-.config/starship.toml
-.zshrc
-# Theme choice (preset or wallpaper colors) and the wallpapers themselves
-.local/state/43pr
-Pictures/Wallpapers
 
-# antrel-os additions
+# Look and session environment
 .config/fontconfig
 .config/environment.d
+
+# git identity; pushes go through `gh auth login`
 .config/git
-# Vesktop: tray icons (standard Discord), and the Discord icon its menu entry uses (setup.sh)
-.var/app/dev.vencord.Vesktop/config/vesktop/userAssets
-.local/share/icons/hicolor/256x256/apps/antrel-discord.png
