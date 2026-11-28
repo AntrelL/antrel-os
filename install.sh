@@ -27,6 +27,10 @@ readonly MNT=/mnt
 readonly BTRFS_OPTS=noatime,compress=zstd:1
 # Arch mirrors nearest to Belarus (reflector picks the fastest of them).
 readonly MIRROR_COUNTRIES=BY,LT,LV,PL,DE,FI,SE
+# From the plan on, everything printed also goes here. A failed install leaves a copy on the EFI partition
+# ($ESP_LOG), where the agent can read it from Windows: the live USB itself is read-only.
+readonly LOG=/tmp/antrel-os-install.log
+readonly ESP_LOG=EFI/antrel-os/install-failed.log
 
 # The live USB has a text console with 8 colors and the PC's own character set: √ and ► exist there, ✓ does not.
 readonly RESET=$'\e[0m' BOLD=$'\e[1m' DIM=$'\e[2m' RED=$'\e[31m' GREEN=$'\e[32m' YELLOW=$'\e[33m' \
@@ -543,11 +547,9 @@ partition() {
     mkfs.fat -F 32 -n EFI "$esp" >/dev/null
     ok "EFI partition $esp"
   fi
-  # Leftovers from Windows or an old system can make mount's type detection give up (it then tries ext4),
-  # so the old signatures go first and every mount names its type.
-  wipefs -aq "$target"
   mkfs.btrfs -q -f -L "$LABEL" "$target"
   udevadm settle
+  # Types are named: on the real PC, mount failed to recognize this fresh btrfs (it fell back to ext4).
   mount -t btrfs "$target" "$MNT"
   btrfs -q subvolume create "$MNT/@"
   btrfs -q subvolume create "$MNT/@home"
@@ -610,6 +612,8 @@ bootloader() {
 finish() {
   # pacstrap -K leaves a gpg-agent for the new system's keyring running here: it keeps $MNT busy.
   gpgconf --homedir "$MNT/etc/pacman.d/gnupg" --kill all || true
+  rm -f "$MNT/efi/$ESP_LOG"
+  cp "$LOG" "$MNT/var/log/antrel-os-install.log"
   sleep 1
   umount -R "$MNT"
   step "Done"
@@ -619,18 +623,69 @@ finish() {
   cat <<EOF
 Next: reboot, pull out the USB stick (command: reboot).
 In the menu pick antrel-os$( ((any_windows)) && echo " (Windows is there too)"). Log in as $USER_NAME on the login screen: KDE Plasma starts.
+The install log is in /var/log/antrel-os-install.log.
 EOF
+}
+
+start_log() {
+  : >"$LOG"
+  exec > >(tee -a "$LOG") 2>&1
+  tee_pid=$!
+}
+
+stop_log() {
+  local i
+  exec >/dev/tty 2>&1
+  # tee ends once the pipe is closed, but programs left running in the background may still hold it open.
+  for ((i = 0; i < 20; i++)); do
+    kill -0 "$tee_pid" 2>/dev/null || break
+    sleep 0.1
+  done
+}
+
+# On a failure after the plan: diagnostics into the log, the log onto the EFI partition.
+on_exit() {
+  local status=$? dir
+  printf '\e[?25h'
+  [[ -n ${tee_pid-} ]] || return 0
+  stop_log
+  ((status != 0)) || return 0
+  {
+    printf '\n== Diagnostics (exit code %s)\n' "$status"
+    lsblk -o NAME,SIZE,TYPE,FSTYPE,PARTTYPENAME,PARTLABEL,LABEL,MOUNTPOINTS
+    [[ -n $target ]] && blkid -p "$target"
+    findmnt -R "$MNT"
+    lsmod | grep -E '^(btrfs|vfat|nvme)'
+    dmesg | tail -n 80
+  } >>"$LOG" 2>&1 || true
+  if [[ -z $esp || ! -b $esp ]]; then
+    printf '\nThe log is only in %s: there is no EFI partition to save it to.\n' "$LOG"
+    return 0
+  fi
+  if mountpoint -q "$MNT/efi"; then
+    dir=$MNT/efi
+  else
+    dir=$(mktemp -d)
+    mount -t vfat "$esp" "$dir" || { printf '\nThe log is only in %s.\n' "$LOG"; return 0; }
+  fi
+  if mkdir -p "$dir/${ESP_LOG%/*}" && cp "$LOG" "$dir/$ESP_LOG"; then
+    printf '\nThe log is saved on the EFI partition (%s): start Windows and ask the agent to read it.\n' "$ESP_LOG"
+  else
+    printf '\nThe log is only in %s.\n' "$LOG"
+  fi
+  [[ $dir == "$MNT/efi" ]] || umount "$dir" || true
 }
 
 main() {
   checks
   scan
-  chosen=-1
-  trap 'printf "\e[?25h"' EXIT
+  chosen=-1 target="" esp=""
+  trap on_exit EXIT
   while true; do
     choose
     confirm && break
   done
+  start_log
   mirrors
   partition
   clean_esp
